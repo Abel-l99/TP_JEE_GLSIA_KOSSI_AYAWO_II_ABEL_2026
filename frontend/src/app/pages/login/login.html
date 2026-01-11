@@ -15,7 +15,12 @@
     <button mat-flat-button [disabled]="loginFormGroup.invalid">Login</button>
     
     @if (invalidCredentials) {
-      <mat-error>Invalid credentials</mat-error>
+      <mat-error>{{errorMessage}}</mat-error>
     }
+
+    <button mat-stroked-button type="button" routerLink="/register">
+      Vous n'avez pas de compte ? S'inscrire
+    </button>
+
   </form>
 </div>

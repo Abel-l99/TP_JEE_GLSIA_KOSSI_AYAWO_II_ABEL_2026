@@ -1,0 +1,67 @@
+<div class="form-container">
+  <h2>Ajouter un nouveau client</h2>
+  
+  <form>
+    <!-- Ligne 1 : Nom & Prénom -->
+    <div class="form-row">
+      <div class="form-group">
+        <label>Nom *</label>
+        <input type="text" placeholder="Dupont" required>
+      </div>
+      
+      <div class="form-group">
+        <label>Prénom *</label>
+        <input type="text" placeholder="Jean" required>
+      </div>
+    </div>
+
+    <!-- Ligne 2 : Email & Téléphone -->
+    <div class="form-row">
+      <div class="form-group">
+        <label>Email *</label>
+        <input type="email" placeholder="jean.dupont@mail.com" required>
+      </div>
+      
+      <div class="form-group">
+        <label>Téléphone</label>
+        <input type="tel" placeholder="06 12 34 56 78">
+      </div>
+    </div>
+
+    <!-- Ligne 3 : Date de naissance & Sexe -->
+    <div class="form-row">
+      <div class="form-group">
+        <label>Date de naissance</label>
+        <input type="date">
+      </div>
+      
+      <div class="form-group">
+        <label>Sexe</label>
+        <select>
+          <option value="">Sélectionner</option>
+          <option value="M">Masculin</option>
+          <option value="F">Féminin</option>
+          <option value="A">Autre</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Ligne 4 : Adresse -->
+    <div class="form-group full-width">
+      <label>Adresse</label>
+      <textarea placeholder="123 Rue de la République, 75001 Paris" rows="3"></textarea>
+    </div>
+
+    <!-- Ligne 5 : Nationalité -->
+    <div class="form-group full-width">
+      <label>Nationalité</label>
+      <input type="text" placeholder="Française">
+    </div>
+
+    <!-- Boutons -->
+    <div class="form-actions">
+      <button type="button" class="btn cancel" routerLink="/admin/clients">Annuler</button>
+      <button type="submit" class="btn submit">Enregistrer</button>
+    </div>
+  </form>
+</div>

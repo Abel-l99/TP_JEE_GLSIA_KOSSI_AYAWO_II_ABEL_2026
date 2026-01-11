@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { LoginService } from '../../services/login/login-service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Credentials } from '../../models/credentials.model';
 import { User } from '../../models/user.model';
@@ -15,6 +15,7 @@ import { User } from '../../models/user.model';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    RouterLink,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule
@@ -28,7 +29,8 @@ export class Login implements OnDestroy {
   private loginService = inject(LoginService);
   private router = inject(Router);
 
-  private  loginSubscription: Subscription | null = null;
+  private loginSubscription: Subscription | null = null;
+  protected errorMessage: string | null = null;
 
   loginFormGroup: FormGroup = this.formBuilder.group({
     username: ['', [Validators.required]],
@@ -45,14 +47,21 @@ export class Login implements OnDestroy {
         this.navigateHome();
       },
       error: error =>  {
+
         console.log(error);
         this.invalidCredentials = true;
+        this.errorMessage = error.error?.details || 'Erreur inconnue';
+
       }
     })
   }
 
+  navigateToRegister(){
+    this.router.navigate(['register']);
+  }
+
   navigateHome(){
-    this.router.navigate(['dashboard']);
+    this.router.navigate(['admin/dashboard']);
   }
 
   ngOnDestroy(): void {

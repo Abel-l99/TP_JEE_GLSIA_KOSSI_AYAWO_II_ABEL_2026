@@ -53,5 +53,6 @@ export class LoginService {
   isAuthenticated(): boolean {
     return !!this.user();
   }
+  
 }
 
