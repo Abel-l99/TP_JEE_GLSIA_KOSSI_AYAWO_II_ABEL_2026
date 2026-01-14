@@ -161,7 +161,7 @@ public class ClientController {
         Map<String, Long> response = new HashMap<>();
         response.put("count", count);
 
-        return ResponseEntity.ok(response);  // 200
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -183,4 +183,5 @@ public class ClientController {
 
         return ResponseEntity.ok(response);  // 200
     }
+
 }

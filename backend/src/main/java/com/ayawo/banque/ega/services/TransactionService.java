@@ -18,7 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -326,6 +328,15 @@ public class TransactionService {
                 .stream()
                 .map(transactionMapper::toResponseDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public long countTransactionsToday() {
+        LocalDate today = LocalDate.now();
+
+        return transactionRepository.findAll().stream()
+                .filter(transaction -> transaction.getDate().toLocalDate().equals(today))
+                .count();
     }
 
 }

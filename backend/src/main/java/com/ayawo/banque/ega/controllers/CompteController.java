@@ -2,6 +2,7 @@ package com.ayawo.banque.ega.controllers;
 
 import com.ayawo.banque.ega.dto.compte.CompteRequestDTO;
 import com.ayawo.banque.ega.dto.compte.CompteResponseDTO;
+import com.ayawo.banque.ega.dto.compte.CompteSummaryDTO;
 import com.ayawo.banque.ega.dto.compte.CompteUpdateDTO;
 import com.ayawo.banque.ega.services.CompteService;
 import jakarta.validation.Valid;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,8 +95,6 @@ public class CompteController {
             @PathVariable String numeroCompte,
             @Valid @RequestBody CompteUpdateDTO updateDTO) {
 
-        log.info("Requête PUT /api/comptes/{} - Mise à jour du compte", numeroCompte);
-
         CompteResponseDTO updatedCompte = compteService.updateCompte(numeroCompte, updateDTO);
 
         return ResponseEntity.ok(updatedCompte);
@@ -109,8 +109,6 @@ public class CompteController {
     public ResponseEntity<Map<String, String>> deleteCompte(
             @PathVariable String numeroCompte) {
 
-        log.info("Requête DELETE /api/comptes/{} - Suppression du compte", numeroCompte);
-
         compteService.deleteCompte(numeroCompte);
 
         Map<String, String> response = new HashMap<>();
@@ -119,4 +117,32 @@ public class CompteController {
 
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/count")
+    public ResponseEntity<Map<String, Long>> countComptes() {
+
+        long count = compteService.countComptes();
+
+        Map<String, Long> response = new HashMap<>();
+        response.put("count", count);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/total-solde")
+    public ResponseEntity<Map<String, BigDecimal>> getTotalSolde() {
+        BigDecimal total = compteService.getTotalSolde();
+
+        Map<String, BigDecimal> response = new HashMap<>();
+        response.put("total", total);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/summary")
+    public ResponseEntity<List<CompteSummaryDTO>> getAllComptesSummary() {
+        List<CompteSummaryDTO> comptes = compteService.getAllComptesSummary();
+        return ResponseEntity.ok(comptes);
+    }
+
 }

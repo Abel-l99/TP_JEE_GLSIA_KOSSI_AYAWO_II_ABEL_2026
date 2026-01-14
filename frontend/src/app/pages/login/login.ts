@@ -60,8 +60,17 @@ export class Login implements OnDestroy {
     this.router.navigate(['register']);
   }
 
-  navigateHome(){
-    this.router.navigate(['admin/dashboard']);
+  navigateHome() {
+    const user = this.loginService.user();
+    const role = user?.role;
+
+    console.log(role);
+    
+    if (role === 'ADMIN') {
+      this.router.navigate(['/admin/dashboard']);
+    } else {
+      this.router.navigate(['/client/dashboard']);
+    }
   }
 
   ngOnDestroy(): void {

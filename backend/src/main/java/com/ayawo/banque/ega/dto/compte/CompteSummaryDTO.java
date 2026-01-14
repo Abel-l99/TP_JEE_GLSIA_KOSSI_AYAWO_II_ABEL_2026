@@ -4,6 +4,7 @@ import com.ayawo.banque.ega.enums.TypeCompte;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -15,5 +16,6 @@ public class CompteSummaryDTO {
     private String numeroCompte;
     private TypeCompte typeCompte;
     private BigDecimal solde;
+    private LocalDateTime dateCreation;
     private String proprietaireNom;
 }

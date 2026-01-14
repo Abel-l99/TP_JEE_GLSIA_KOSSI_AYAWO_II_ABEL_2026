@@ -50,11 +50,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> {})
                 .authorizeHttpRequests(auth -> auth
-                        // Endpoints publics (pas d'authentification requise)
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/user").permitAll()
+                        .requestMatchers("/user/username/{username}").permitAll()
 
-                        // Tous les autres endpoints nécessitent une authentification
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

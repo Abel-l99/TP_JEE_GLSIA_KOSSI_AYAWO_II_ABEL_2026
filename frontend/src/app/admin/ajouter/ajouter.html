@@ -1,17 +1,31 @@
 <div class="form-container">
   <h2>Ajouter un nouveau client</h2>
-  
-  <form>
+
+  <!-- Message de succès/erreur -->
+  <div *ngIf="message" [class]="isError ? 'message-error' : 'message-success'">
+    {{ message }}
+  </div>
+
+  <form [formGroup]="clientForm" (ngSubmit)="onSubmit()">
+    
     <!-- Ligne 1 : Nom & Prénom -->
     <div class="form-row">
       <div class="form-group">
         <label>Nom *</label>
-        <input type="text" placeholder="Dupont" required>
+        <input type="text" formControlName="nom" placeholder="Dupont" required>
+        <div *ngIf="clientForm.get('nom')?.invalid && clientForm.get('nom')?.touched" 
+             class="error-text">
+          Le nom est obligatoire
+        </div>
       </div>
       
       <div class="form-group">
         <label>Prénom *</label>
-        <input type="text" placeholder="Jean" required>
+        <input type="text" formControlName="prenom" placeholder="Jean" required>
+        <div *ngIf="clientForm.get('prenom')?.invalid && clientForm.get('prenom')?.touched" 
+             class="error-text">
+          Le prénom est obligatoire
+        </div>
       </div>
     </div>
 
@@ -19,12 +33,17 @@
     <div class="form-row">
       <div class="form-group">
         <label>Email *</label>
-        <input type="email" placeholder="jean.dupont@mail.com" required>
+        <input type="email" formControlName="email" placeholder="jean.dupont@mail.com" required>
+        <div *ngIf="clientForm.get('email')?.invalid && clientForm.get('email')?.touched" 
+             class="error-text">
+          <span *ngIf="clientForm.get('email')?.errors?.['required']">Email requis</span>
+          <span *ngIf="clientForm.get('email')?.errors?.['email']">Email invalide</span>
+        </div>
       </div>
       
       <div class="form-group">
         <label>Téléphone</label>
-        <input type="tel" placeholder="06 12 34 56 78">
+        <input type="tel" formControlName="telephone" placeholder="06 12 34 56 78">
       </div>
     </div>
 
@@ -32,16 +51,15 @@
     <div class="form-row">
       <div class="form-group">
         <label>Date de naissance</label>
-        <input type="date">
+        <input type="date" formControlName="dateNaissance">
       </div>
       
       <div class="form-group">
         <label>Sexe</label>
-        <select>
+        <select formControlName="sexe">
           <option value="">Sélectionner</option>
-          <option value="M">Masculin</option>
-          <option value="F">Féminin</option>
-          <option value="A">Autre</option>
+          <option value="MASCULIN">Masculin</option>
+          <option value="FEMININ">Féminin</option>
         </select>
       </div>
     </div>
@@ -49,19 +67,25 @@
     <!-- Ligne 4 : Adresse -->
     <div class="form-group full-width">
       <label>Adresse</label>
-      <textarea placeholder="123 Rue de la République, 75001 Paris" rows="3"></textarea>
+      <textarea formControlName="adresse" 
+                placeholder="123 Rue de la République, 75001 Paris" rows="3"></textarea>
     </div>
 
     <!-- Ligne 5 : Nationalité -->
     <div class="form-group full-width">
       <label>Nationalité</label>
-      <input type="text" placeholder="Française">
+      <input type="text" formControlName="nationalite" placeholder="Française">
     </div>
 
     <!-- Boutons -->
     <div class="form-actions">
-      <button type="button" class="btn cancel" routerLink="/admin/clients">Annuler</button>
-      <button type="submit" class="btn submit">Enregistrer</button>
+      <button type="button" class="btn cancel" routerLink="/admin/clients">
+        Annuler
+      </button>
+      <button type="submit" class="btn submit" [disabled]="clientForm.invalid || isLoading">
+        <span *ngIf="!isLoading">Enregistrer</span>
+        <span *ngIf="isLoading">En cours...</span>
+      </button>
     </div>
   </form>
 </div>

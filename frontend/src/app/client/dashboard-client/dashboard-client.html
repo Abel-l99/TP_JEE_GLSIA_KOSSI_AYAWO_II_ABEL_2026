@@ -1,22 +1,22 @@
 <section class="stats-cards">
   <div class="stat-card">
-    <h4>Total Clients</h4>
-    <h2> {{counts[0]}} </h2>
-  </div>
-
-  <div class="stat-card">
     <h4>Total Comptes</h4>
-    <h2> {{counts[1]}} </h2>
+    <h2>{{statistiques.totalComptes}}</h2>
   </div>
 
   <div class="stat-card">
-    <h4>Transactions du jour</h4>
-    <h2> {{counts[2]}} </h2>
+    <h4>Comptes courants</h4>
+    <h2>{{statistiques.nombreCourant}}</h2>
+  </div>
+
+  <div class="stat-card">
+    <h4>Comptes épargnes</h4>
+    <h2>{{statistiques.nombreEpargne}}</h2>
   </div>
 
   <div class="stat-card highlight">
     <h4>Solde Total</h4>
-    <h2>{{totalSolde}}</h2>
+    <h2>{{statistiques.sommeTotale}} FCFA</h2>
   </div>
 </section>
 

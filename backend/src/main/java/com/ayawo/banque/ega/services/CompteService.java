@@ -2,6 +2,7 @@ package com.ayawo.banque.ega.services;
 
 import com.ayawo.banque.ega.dto.compte.CompteRequestDTO;
 import com.ayawo.banque.ega.dto.compte.CompteResponseDTO;
+import com.ayawo.banque.ega.dto.compte.CompteSummaryDTO;
 import com.ayawo.banque.ega.dto.compte.CompteUpdateDTO;
 import com.ayawo.banque.ega.entities.ClientEntity;
 import com.ayawo.banque.ega.entities.CompteEntity;
@@ -189,5 +190,36 @@ public class CompteService {
         } while (compteRepository.existsByNumeroCompte(iban));
 
         return iban;
+    }
+
+    @Transactional(readOnly = true)
+    public long countComptes() {
+        long count = compteRepository.count();
+        return count;
+    }
+
+    @Transactional(readOnly = true)
+    public BigDecimal getTotalSolde() {
+        return compteRepository.findAll().stream()
+                .map(CompteEntity::getSolde)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    @Transactional(readOnly = true)
+    public List<CompteSummaryDTO> getAllComptesSummary() {
+        return compteRepository.findAll().stream()
+                .map(compte -> {
+                    ClientEntity client = compte.getProprietaire();
+                    String nomComplet = client.getPrenom() + " " + client.getNom();
+
+                    return CompteSummaryDTO.builder()
+                            .numeroCompte(compte.getNumeroCompte())
+                            .typeCompte(compte.getTypeCompte())
+                            .solde(compte.getSolde())
+                            .proprietaireNom(nomComplet)
+                            .dateCreation(compte.getDateCreation())
+                            .build();
+                })
+                .collect(Collectors.toList());
     }
 }

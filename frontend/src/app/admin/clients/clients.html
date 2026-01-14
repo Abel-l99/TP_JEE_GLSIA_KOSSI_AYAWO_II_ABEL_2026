@@ -16,14 +16,16 @@
     </thead>
 
     <tbody>
+      @for (client of clients; track client) {
       <tr>
-        <td>Dupont Jean</td>
-        <td>jean.dupont@mail.com</td>
-        <td>2</td>
+        <td>{{ client.nom }} {{ client.prenom }}</td>
+        <td>{{ client.email }}</td>
+        <td>{{ client.nombreComptes || 0 }}</td>
         <td>
           <button class="btn delete">Supprimer</button>
         </td>
       </tr>
+    }
     </tbody>
   </table>
 </section>

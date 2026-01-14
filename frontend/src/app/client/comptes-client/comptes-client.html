@@ -1,0 +1,36 @@
+<section class="accounts-section">
+  <div class="section-header">
+    <h3>Liste des Comptes</h3>
+
+    <button class="btn add" routerLink="">Ajouter un compte</button>
+    
+    <div class="header-actions">
+      <input type="text" placeholder="Rechercher un compte" class="search-bar">
+    </div>
+  </div>
+
+  <table class="accounts-table">
+    <thead>
+      <tr>
+        <th>Numéro</th>
+        <th>Type</th>
+        <th>Solde</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+        <tr *ngFor="let compte of comptes">
+          <td>{{ compte.numeroCompte }}</td>
+          <td>{{ compte.typeCompte }}</td>
+          <td>{{ compte.solde }} €</td>
+          <td>
+            <button>Dépôt</button>
+            <button>Retrait</button>
+            <button>Virement</button>
+          </td>
+        </tr>
+      </tbody>
+
+  </table>
+</section>

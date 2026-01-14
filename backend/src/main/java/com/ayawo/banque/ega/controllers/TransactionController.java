@@ -138,4 +138,15 @@ public class TransactionController {
 
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/count")
+    public ResponseEntity<Map<String, Long>> countClients() {
+
+        long count = transactionService.countTransactionsToday();
+
+        Map<String, Long> response = new HashMap<>();
+        response.put("count", count);
+
+        return ResponseEntity.ok(response);
+    }
 }
