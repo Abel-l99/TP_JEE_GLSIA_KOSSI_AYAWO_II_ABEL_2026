@@ -51,6 +51,7 @@ public class SecurityConfig {
                 .cors(cors -> {})
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/releves/**").permitAll()
                         .requestMatchers("/user").permitAll()
                         .requestMatchers("/user/username/{username}").permitAll()
                         .requestMatchers("/transaction").permitAll()

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { ClientService } from '../../services/client-service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -15,9 +15,9 @@ export class Ajouter {
   private fb = inject(FormBuilder);
   private clientService = inject(ClientService);
   private router = inject(Router);
+  cdr = inject(ChangeDetectorRef);
   
   clientForm: FormGroup;
-  isLoading = false;
   message = '';
   isError = false;
 
@@ -26,17 +26,16 @@ export class Ajouter {
       nom: ['', Validators.required],
       prenom: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      telephone: [''],
-      dateNaissance: [''],
-      sexe: [''],
-      adresse: [''],
-      nationalite: ['']
+      telephone: ['', [Validators.required]],
+      dateNaissance: ['', Validators.required],
+      sexe: ['', Validators.required],
+      adresse: ['', Validators.required],
+      nationalite: ['', Validators.required]
     });
   }
 
   onSubmit(): void {
     if (this.clientForm.valid) {
-      this.isLoading = true;
       this.message = '';
       this.isError = false;
       
@@ -46,7 +45,7 @@ export class Ajouter {
       this.clientService.createClient(donneesNettoyees)
         .subscribe({
           next: (reponse) => {
-            this.isLoading = false;
+            console.log(reponse);
             this.message = 'Client ajouté avec succès !';
             this.isError = false;
             
@@ -58,14 +57,10 @@ export class Ajouter {
             }, 2000);
           },
           error: (erreur) => {
-            this.isLoading = false;
+            console.error(erreur);
+            this.message = erreur.error?.message || 'Erreur lors de l\'ajout du client';
             this.isError = true;
-            
-            if (erreur.error && erreur.error.message) {
-              this.message = erreur.error.message;
-            } else {
-              this.message = 'Erreur lors de l\'ajout du client';
-            }
+            this.cdr.detectChanges();
           }
         });
     }
@@ -78,4 +73,9 @@ export class Ajouter {
     }
     return nettoye;
   }
+
+  getMaxDate(): string {
+    return new Date().toISOString().split('T')[0];
+  }
+
 }

@@ -85,7 +85,11 @@ export class LoginService {
   }
 
   logout(): void {
-    this.clearAuth();
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    this.user.set(null);
+    
+    window.location.href = '/login';
   }
 
   private clearAuth(): void {

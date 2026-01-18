@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -37,6 +37,22 @@ export class TransactionService {
     return new HttpHeaders({
       "Authorization": "Bearer " + localStorage.getItem("token"),
       "Content-Type": "application/json"
+    });
+  }
+
+  telechargerReleveGlobal(clientId: number, dateDebut: string, dateFin: string): Observable<Blob> {
+    const url = `${BASE_URL}/releves/client/${clientId}`;
+    
+    let params = new HttpParams()
+      .set('dateDebut', dateDebut)
+      .set('dateFin', dateFin);
+
+    console.log('URL appelée:', url);
+    console.log('Params:', params.toString());
+
+    return this.http.get(url, {
+      params: params,
+      responseType: 'blob'
     });
   }
   

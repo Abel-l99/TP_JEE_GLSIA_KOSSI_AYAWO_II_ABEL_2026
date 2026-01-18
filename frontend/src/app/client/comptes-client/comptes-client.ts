@@ -8,7 +8,7 @@ import { TransactionService } from '../../services/transaction-service';
 
 @Component({
   selector: 'app-comptes-client',
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './comptes-client.html',
   styleUrl: './comptes-client.scss',
 })
@@ -234,4 +234,5 @@ export class ComptesClient implements OnInit {
   rafraichir(): void {
     this.chargerComptes();
   }
+
 }

@@ -6,7 +6,7 @@
       <a routerLink="/client/comptes" class="back-link">←</a>
       Créer un nouveau compte
     </h1>
-    <p *ngIf="user" class="client-info">Pour : {{ user.clientNom }}</p>
+    <p *ngIf="clientInfo" class="client-info">Pour : {{ clientInfo.clientNom }}</p>
   </div>
 
   <!-- Messages -->
@@ -77,7 +77,7 @@
           </div>
           <div class="detail-item">
             <span class="detail-label">Client :</span>
-            <span class="detail-value">{{ user?.clientNom }}</span>
+            <span class="detail-value">{{ clientInfo?.clientNom }}</span>
           </div>
         </div>
         

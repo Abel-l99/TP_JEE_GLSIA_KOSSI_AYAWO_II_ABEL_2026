@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { LoginService } from '../../services/login/login-service';
 import { DashboardService } from '../../services/dashboard-service';
 import { Chart } from 'chart.js/auto';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard-client',
@@ -12,6 +13,7 @@ export class DashboardClient implements OnInit {
 
   private loginService = inject(LoginService);
   private dashboardService = inject(DashboardService);
+  private router = inject(Router);
   private cdRef = inject(ChangeDetectorRef);
 
   // ===== UTILISATEUR =====
@@ -79,6 +81,8 @@ export class DashboardClient implements OnInit {
 
       } else {
         console.error('❌ Utilisateur ou clientId introuvable');
+        this.router.navigate(['/login']);
+        return;
       }
 
     }, 1500);
@@ -124,11 +128,17 @@ export class DashboardClient implements OnInit {
         datasets: [
           {
             label: 'Dépôts',
-            data: this.depotsParMois
+            data: this.depotsParMois,
+            backgroundColor: '#28a745',
+            borderColor: '#218838',
+            borderWidth: 1
           },
           {
             label: 'Retraits',
-            data: this.retraitsParMois
+            data: this.retraitsParMois,
+            backgroundColor: '#dc3545',
+            borderColor: '#c82333',
+            borderWidth: 1
           }
         ]
       }
@@ -158,4 +168,5 @@ export class DashboardClient implements OnInit {
 
     console.log('📊 STATISTIQUES:', this.statistiques);
   }
+  
 }

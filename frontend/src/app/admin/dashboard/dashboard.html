@@ -16,38 +16,16 @@
 
   <div class="stat-card highlight">
     <h4>Solde Total</h4>
-    <h2>{{totalSolde}}</h2>
+    <!-- AJOUTE formaterMontant() -->
+    <h2>{{ formaterMontant(totalSolde) }}</h2>
   </div>
 </section>
 
 
 
+<!-- ================= GRAPHIQUE TRANSACTIONS ================= -->
 <section class="graph-section">
-
-  <!-- Graphique -->
-  <div class="chart-simulation">
-    <!-- Axes -->
-    <div class="chart-axis x-axis"></div>
-    <div class="chart-axis y-axis"></div>
-    
-    <!-- Bars -->
-    <div class="chart-bar" style="--height: 80%; --color: #3b82f6;"></div>
-    <div class="chart-bar" style="--height: 60%; --color: #10b981;"></div>
-    <div class="chart-bar" style="--height: 90%; --color: #f59e0b;"></div>
-    <div class="chart-bar" style="--height: 40%; --color: #ef4444;"></div>
-    <div class="chart-bar" style="--height: 70%; --color: #8b5cf6;"></div>
-    <div class="chart-bar" style="--height: 90%; --color: #7eb9ac;"></div>
-    <div class="chart-bar" style="--height: 30%; --color: #c8f65c;"></div>
-    
-    <!-- Labels -->
-    <div class="chart-labels">
-      <span>Lun</span>
-      <span>Mar</span>
-      <span>Mer</span>
-      <span>Jeu</span>
-      <span>Ven</span>
-      <span>Sam</span>
-      <span>Dim</span>
-    </div>
+  <div class="chart-container">
+    <canvas id="adminChart"></canvas>
   </div>
-
+</section>

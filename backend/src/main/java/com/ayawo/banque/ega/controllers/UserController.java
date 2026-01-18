@@ -36,8 +36,6 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> createUser(
             @Valid @RequestBody UserRequestDTO requestDTO) {
 
-        log.info("Requête POST /api/users - Création d'un utilisateur");
-
         UserResponseDTO createdUser = userService.createUser(requestDTO);
 
         return ResponseEntity
@@ -119,8 +117,6 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> updateUser(
             @PathVariable Long id,
             @Valid @RequestBody UserUpdateDTO updateDTO) {
-
-        log.info("Requête PUT /api/users/{} - Mise à jour de l'utilisateur", id);
 
         UserResponseDTO updatedUser = userService.updateUser(id, updateDTO);
 

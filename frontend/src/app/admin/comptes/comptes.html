@@ -3,29 +3,86 @@
     <h3>Liste des Comptes</h3>
     
     <div class="header-actions">
-      <input type="text" placeholder="Rechercher un compte" class="search-bar">
+      <!-- Input de recherche avec ngModel -->
+      <input 
+        type="text" 
+        [(ngModel)]="recherche"
+        (input)="onRechercheChange()"
+        placeholder="Rechercher par numéro, client ou type..." 
+        class="search-bar">
+      
+      <!-- Bouton pour effacer -->
+      <button *ngIf="recherche" 
+              (click)="reinitialiserRecherche()"
+              class="btn-clear"
+              title="Effacer la recherche">
+        ✕
+      </button>
     </div>
   </div>
 
-  <table class="accounts-table">
-    <thead>
-      <tr>
-        <th>Numéro</th>
-        <th>Date de création</th>
-        <th>Client</th>
-        <th>Type</th>
-      </tr>
-    </thead>
+  <!-- Chargement -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Chargement des comptes...</p>
+  </div>
 
-    <tbody>
-      @for (compte of comptes; track compte) {
+  <!-- Résultats de recherche -->
+  <div *ngIf="!loading">
+    <!-- Info recherche -->
+    <div *ngIf="recherche" class="search-info">
+      <p>
+        <strong>{{ comptesFiltres.length }}</strong> 
+        compte(s) trouvé(s) pour "{{ recherche }}"
+      </p>
+    </div>
+
+    <!-- Aucun résultat -->
+    <div *ngIf="recherche && comptesFiltres.length === 0" class="no-results">
+      <div class="no-results-icon">🔍</div>
+      <p>Aucun compte ne correspond à "{{ recherche }}"</p>
+      <button (click)="reinitialiserRecherche()" class="btn-link">
+        Afficher tous les comptes
+      </button>
+    </div>
+
+    <!-- Tableau -->
+    <table class="accounts-table">
+      <thead>
         <tr>
-          <td>{{compte.numeroCompte}}</td>
-          <td>{{ compte.dateCreation | date:'dd/MM/yyyy à HH:mm' }}</td>
-          <td>{{compte.proprietaireNom}}</td>
-          <td>{{compte.typeCompte}}</td>  
+          <th>Numéro</th>
+          <th>Date de création</th>
+          <th>Client</th>
+          <th>Type</th>
         </tr>
-    }
-    </tbody>
-  </table>
+      </thead>
+
+      <tbody>
+        @for (compte of comptesFiltres; track compte.numeroCompte) {
+          <tr>
+            <td class="account-number">
+              {{ compte.numeroCompte || 'N/A' }}
+            </td>
+            <td>{{ compte.dateCreation | date:'dd/MM/yyyy à HH:mm' }}</td>
+            <td>{{ compte.proprietaireNom || 'N/A' }}</td>
+            <td>
+              <span [class]="getTypeBadgeClass(compte.typeCompte)">
+                {{ formaterTypeCompte(compte.typeCompte) }}
+              </span>
+            </td>  
+          </tr>
+        }
+        
+        <!-- Si pas de comptes du tout -->
+        @if (!loading && comptes.length === 0) {
+          <tr>
+            <td colspan="4" class="no-data">
+              <div class="no-data-icon">📭</div>
+              <p>Aucun compte disponible</p>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
 </section>

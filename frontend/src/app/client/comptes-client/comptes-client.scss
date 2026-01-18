@@ -73,22 +73,6 @@
   }
 }
 
-.btn.add {
-  background: linear-gradient(135deg, #2ecc71, #27ae60);
-  color: white;
-  padding: 10px 24px;
-  
-  &::before {
-    content: '+';
-    font-size: 18px;
-    font-weight: bold;
-  }
-  
-  &:hover {
-    background: linear-gradient(135deg, #27ae60, #219653);
-  }
-}
-
 /* ===== BOUTONS D'ACTION ===== */
 .actions-cell button {
   padding: 6px 14px;
@@ -273,39 +257,6 @@
   }
 }
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 768px) {
-  .clients-section,
-  .accounts-section {
-    padding: 16px;
-    margin: 16px;
-  }
-  
-  .section-header {
-    flex-direction: column;
-    gap: 16px;
-    align-items: flex-start;
-  }
-  
-  .header-actions {
-    width: 100%;
-    flex-direction: column;
-  }
-  
-  .search-bar {
-    width: 100%;
-  }
-  
-  .accounts-table {
-    display: block;
-    overflow-x: auto;
-    
-    th, td {
-      white-space: nowrap;
-    }
-  }
-}
-
 /* ===== ANIMATIONS ===== */
 @keyframes fadeIn {
   from {
@@ -362,4 +313,210 @@
 .btn-confirm {
   background: #4CAF50;
   color: white;
+}
+
+/* ===== ANIMATIONS POUR LES BOÎTES DE DIALOGUE ===== */
+@keyframes fadeInOverlay {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInDialog {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes slideOutDialog {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+}
+
+/* Animation pour l'overlay */
+.dialog-overlay {
+  animation: fadeInOverlay 0.3s ease-out;
+}
+
+/* Animation pour la boîte de dialogue */
+.dialog {
+  animation: slideInDialog 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Pour la fermeture (optionnel) */
+.dialog-overlay.closing .dialog {
+  animation: slideOutDialog 0.3s ease;
+}
+
+/* ===== BOÎTES DE DIALOGUE STYLÉES ===== */
+.dialog-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(3px);
+}
+
+.dialog {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  max-width: 450px;
+  width: 90vw;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  
+  /* Gradient border subtil */
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px; right: -1px; bottom: -1px;
+    background: linear-gradient(135deg, #3498db, #2ecc71);
+    border-radius: 17px;
+    z-index: -1;
+  }
+}
+
+.dialog h4 {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  color: #2c3e50;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  
+  &::before {
+    content: '';
+    width: 4px;
+    height: 20px;
+    background: linear-gradient(135deg, #3498db, #2ecc71);
+    border-radius: 2px;
+  }
+}
+
+.confirmation-details {
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 12px;
+  margin: 20px 0;
+  border: 1px solid #e2e8f0;
+  
+  p {
+    margin: 10px 0;
+    color: #4a5568;
+    display: flex;
+    justify-content: space-between;
+    
+    strong {
+      color: #2c3e50;
+      font-weight: 600;
+    }
+    
+    span {
+      color: #718096;
+    }
+  }
+}
+
+.form-group {
+  margin-bottom: 20px;
+  
+  label {
+    display: block;
+    margin-bottom: 8px;
+    color: #4a5568;
+    font-weight: 500;
+    font-size: 14px;
+  }
+  
+  input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    background: white;
+    color: #2c3e50;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    
+    &:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+  }
+  
+  small {
+    display: block;
+    margin-top: 6px;
+    color: #94a3b8;
+    font-size: 12px;
+  }
+}
+
+.dialog-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #e9ecef;
+}
+
+.btn-cancel {
+  background: #f1f5f9;
+  color: #475569;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: #e2e8f0;
+    transform: translateY(-2px);
+  }
+}
+
+.btn-confirm {
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: linear-gradient(135deg, #27ae60, #219653);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+  }
 }

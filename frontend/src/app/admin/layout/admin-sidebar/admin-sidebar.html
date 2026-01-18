@@ -9,10 +9,26 @@
     </nav>
   </div>
 
-  <!-- Déconnexion -->
   <div class="logout">
-    <button (click)="logout()" class="logout-btn">
+    <button class="logout-btn" (click)="openConfirm()">
       <span>🚪</span> Déconnexion
     </button>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div
+  class="modal-backdrop"
+  *ngIf="showConfirm"
+  (click)="closeConfirm()"
+>
+  <div class="modal" (click)="$event.stopPropagation()">
+    <h3>Confirmation</h3>
+    <p>Voulez-vous vraiment vous déconnecter ?</p>
+
+    <div class="actions">
+      <button class="cancel" (click)="closeConfirm()">Annuler</button>
+      <button class="confirm" (click)="confirmLogout()">Oui, se déconnecter</button>
+    </div>
   </div>
 </div>

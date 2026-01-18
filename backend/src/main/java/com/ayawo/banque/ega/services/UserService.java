@@ -42,20 +42,19 @@ public class UserService {
 
         // 1. Vérifier que le username (email) n'existe pas déjà
         if (userRepository.existsByUsername(requestDTO.getUsername())) {
-            log.error("Username déjà existant : {}", requestDTO.getUsername());
             throw new UsernameAlreadyExistsException(requestDTO.getUsername());
         }
 
         // 2. Trouver le client par son email (username = email)
         ClientEntity client = clientRepository.findByEmail(requestDTO.getUsername())
                 .orElseThrow(() -> new ClientNotFoundException(
-                        "Aucun client trouvé avec l'email: " + requestDTO.getUsername()
+                        "Aucun client trouvé avec cette adresse"
                 ));
 
         // 3. Vérifier que le client n'a pas déjà un compte utilisateur
         if (client.getUser() != null) {
             throw new IllegalArgumentException(
-                    "Le client avec l'email " + requestDTO.getUsername() + " a déjà un compte utilisateur"
+                    "Vous avez déjà un compte utilisateur"
             );
         }
 
@@ -72,8 +71,6 @@ public class UserService {
         // 5. Lier le client à l'utilisateur
         client.setUser(savedUser);
         clientRepository.save(client);
-
-        log.info("Compte utilisateur créé avec succès pour le client ID : {}", client.getId());
 
         return userMapper.toResponseDTO(savedUser);
     }

@@ -1,19 +1,59 @@
 <div class="transactions-section">
+  <!-- En-tête avec boutons -->
   <div class="section-header">
     <h3>Historique des transactions</h3>
+    <div class="header-actions">
+      <button class="btn-preview" (click)="voirReleve()" 
+        [disabled]="genererLoading || mesComptes.length === 0">
+        <span *ngIf="!genererLoading">👁️ Voir le relevé</span>
+        <span *ngIf="genererLoading"><span class="spinner"></span> Génération...</span>
+      </button>
+    </div>
   </div>
 
+  <!-- Filtres -->
+  <div class="filters">
+    <div class="filter-group">
+      <label>Date début</label>
+      <input type="date" [(ngModel)]="dateDebut" (change)="appliquerFiltres()">
+    </div>
+    
+    <div class="filter-group">
+      <label>Date fin</label>
+      <input type="date" [(ngModel)]="dateFin" (change)="appliquerFiltres()">
+    </div>
+    
+    <div class="filter-group">
+      <label>Type</label>
+      <select [(ngModel)]="typeFiltre" (change)="appliquerFiltres()">
+        <option value="TOUS">Toutes</option>
+        <option value="DEPOT">Dépôts</option>
+        <option value="RETRAIT">Retraits</option>
+        <option value="VIREMENT">Virements</option>
+      </select>
+    </div>
+    
+    <button class="btn-reset" (click)="reinitialiserFiltres()">
+      <span>🗑️</span> Réinitialiser
+    </button>
+  </div>
+
+  <!-- Liste des transactions -->
   <div class="transactions-list">
     
-    <!-- Pour chaque transaction -->
-    <div *ngFor="let t of transactions" [class]="'transaction-item ' + getTypeTransaction(t)">
+    <!-- Chargement -->
+    <div *ngIf="loading" class="loading-state">
+      <div class="spinner-large"></div>
+      <p>Chargement des transactions...</p>
+    </div>
+    
+    <!-- Transactions filtrées -->
+    <div *ngFor="let t of transactionsFiltrees" 
+         [class]="'transaction-item ' + getTypeTransaction(t)">
       
-      <!-- Icone selon type -->
+      <!-- Icone avec classe Bootstrap -->
       <div class="transaction-icon">
-        <span *ngIf="getTypeTransaction(t) === 'depot'">💰</span>
-        <span *ngIf="getTypeTransaction(t) === 'retrait'">🏧</span>
-        <span *ngIf="getTypeTransaction(t) === 'virement-emis'">➡️</span>
-        <span *ngIf="getTypeTransaction(t) === 'virement-recus'">⬅️</span>
+        <i [class]="'bi ' + getIconeTransaction(getTypeTransaction(t))"></i>
       </div>
       
       <div class="transaction-details">
@@ -22,37 +62,89 @@
         <h4>{{ getMessageTransaction(t) }}</h4>
         
         <!-- Montant -->
-        <p>Montant : <strong>{{ t.montant | currency:'EUR':'symbol':'1.2-2' }}</strong></p>
+        <p class="transaction-amount">
+          Montant : 
+          <strong [class.text-success]="getTypeTransaction(t) === 'depot' || getTypeTransaction(t) === 'virement-recus'"
+                  [class.text-danger]="getTypeTransaction(t) === 'retrait' || getTypeTransaction(t) === 'virement-emis'">
+            {{ formaterMontant(t.montant) }}
+          </strong>
+        </p>
         
         <!-- Détails selon type -->
-        <div *ngIf="getTypeTransaction(t) === 'depot'">
-          <p>Sur votre compte : {{ t.numeroCompteDestination }}</p>
-        </div>
-        
-        <div *ngIf="getTypeTransaction(t) === 'retrait'">
-          <p>De votre compte : {{ t.numeroCompteSource }}</p>
-        </div>
-        
-        <div *ngIf="getTypeTransaction(t) === 'virement-emis'">
-          <p>De votre compte : {{ t.numeroCompteSource }}</p>
-          <p>Vers : {{ t.numeroCompteDestination }} ({{ t.proprietaireDestination }})</p>
-        </div>
-        
-        <div *ngIf="getTypeTransaction(t) === 'virement-recus'">
-          <p>De : {{ t.numeroCompteSource }} ({{ t.proprietaireSource }})</p>
-          <p>Sur votre compte : {{ t.numeroCompteDestination }}</p>
+        <div class="transaction-info">
+          <div *ngIf="getTypeTransaction(t) === 'depot'" class="transaction-detail">
+            <span class="detail-label">Sur :</span>
+            <span class="detail-value">{{ t.numeroCompteSource }}</span>
+          </div>
+          
+          <div *ngIf="getTypeTransaction(t) === 'retrait'" class="transaction-detail">
+            <span class="detail-label">De :</span>
+            <span class="detail-value">{{ t.numeroCompteSource }}</span>
+          </div>
+          
+          <div *ngIf="getTypeTransaction(t) === 'virement-emis'" class="transaction-detail-group">
+            <div class="transaction-detail">
+              <span class="detail-label">De votre compte :</span>
+              <span class="detail-value">{{ t.numeroCompteSource }}</span>
+            </div>
+            <div class="transaction-detail">
+              <span class="detail-label">Vers :</span>
+              <span class="detail-value">
+                {{ t.numeroCompteDestination }} 
+                <span *ngIf="t.proprietaireDestination">({{ t.proprietaireDestination }})</span>
+              </span>
+            </div>
+          </div>
+          
+          <div *ngIf="getTypeTransaction(t) === 'virement-recus'" class="transaction-detail-group">
+            <div class="transaction-detail">
+              <span class="detail-label">De :</span>
+              <span class="detail-value">
+                {{ t.numeroCompteSource }}
+                <span *ngIf="t.proprietaireSource">({{ t.proprietaireSource }})</span>
+              </span>
+            </div>
+            <div class="transaction-detail">
+              <span class="detail-label">Sur votre compte :</span>
+              <span class="detail-value">{{ t.numeroCompteDestination }}</span>
+            </div>
+          </div>
+          
+          <!-- Référence si disponible -->
+          <div *ngIf="t.reference" class="transaction-detail">
+            <span class="detail-label">Réf. :</span>
+            <span class="detail-value reference">{{ t.reference }}</span>
+          </div>
         </div>
         
         <!-- Date -->
-        <span class="transaction-date">{{ t.date | date:'dd/MM/yyyy à HH:mm' }}</span>
+        <span class="transaction-date">
+          <i class="bi bi-calendar"></i>
+          {{ formaterDate(t.date) }}
+        </span>
         
+      </div>
+      
+      <!-- Badge type -->
+      <div class="transaction-type-badge" [class]="getTypeTransaction(t)">
+        {{ t.type }}
       </div>
     </div>
     
   </div>
 
-  <!-- Si pas de transactions -->
-  <div *ngIf="transactions.length === 0" class="no-transactions">
-    <p>Aucune transaction à afficher</p>
+  <!-- Pas de transactions -->
+  <div *ngIf="!loading && transactionsFiltrees.length === 0" class="no-transactions">
+    <div class="empty-state">
+      <div class="empty-icon">📭</div>
+      <h4>Aucune transaction trouvée</h4>
+      <p *ngIf="transactions.length === 0">
+        Vous n'avez effectué aucune transaction pour le moment.
+      </p>
+      <p *ngIf="transactions.length > 0 && transactionsFiltrees.length === 0">
+        Aucune transaction ne correspond à vos filtres.
+        <button class="btn-link" (click)="reinitialiserFiltres()">Réinitialiser les filtres</button>
+      </p>
+    </div>
   </div>
 </div>

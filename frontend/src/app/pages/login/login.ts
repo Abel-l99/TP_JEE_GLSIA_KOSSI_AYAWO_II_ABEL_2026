@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnDestroy } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -23,7 +23,7 @@ import { User } from '../../models/user.model';
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
-export class Login implements OnDestroy {
+export class Login implements OnDestroy, OnInit {
 
   private formBuilder = inject(FormBuilder);
   private loginService = inject(LoginService);
@@ -33,7 +33,7 @@ export class Login implements OnDestroy {
   protected errorMessage: string | null = null;
 
   loginFormGroup: FormGroup = this.formBuilder.group({
-    username: ['', [Validators.required]],
+    username: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required]]
   });
 
@@ -75,6 +75,13 @@ export class Login implements OnDestroy {
 
   ngOnDestroy(): void {
     this.loginSubscription?.unsubscribe();
+  }
+
+  ngOnInit(): void {
+    const user = this.loginService.user();
+    if (user) {
+      this.navigateHome();
+    }
   }
 
 }

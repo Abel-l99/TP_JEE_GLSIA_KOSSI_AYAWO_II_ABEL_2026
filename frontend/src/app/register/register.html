@@ -32,10 +32,13 @@
     <button 
     mat-flat-button
     type="submit"
-    [disabled]="registerFormGroup.invalid || loading">
-      <span *ngIf="!loading">S'inscrire</span>
-      <span *ngIf="loading">Inscription en cours</span>
+    [disabled]="registerFormGroup.invalid">
+      <span>S'inscrire</span>
     </button>
+
+    @if (invalidCredentials) {
+      <mat-error>{{errorMessage}}</mat-error>
+    }
 
     <button mat-stroked-button type="button" routerLink="/login">
       Vous avez déjà un compte ? Se connecter

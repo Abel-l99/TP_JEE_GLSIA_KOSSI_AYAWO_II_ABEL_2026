@@ -24,6 +24,7 @@ export const routes: Routes = [
             { path: 'clients', component: Clients,},
             { path: 'comptes', component: Comptes },
             { path: 'clients/ajouter', component: Ajouter },
+            { path: 'comptes/ajouter/:id', component: AjouterCompte,},
         ]
     },
 
@@ -33,7 +34,6 @@ export const routes: Routes = [
             { path: 'dashboard', component: DashboardClient },
             { path: 'comptes', component: ComptesClient,},
             { path: 'transactions', component: TransactionsClient },
-            { path: 'comptes/ajouter', component: AjouterCompte,},
         ]
     },
 

@@ -2,7 +2,18 @@
   <div class="section-header">
     <h3>Liste des Clients</h3>
     <button class="btn add" routerLink="/admin/clients/ajouter">Ajouter un client</button>
-    <input type="text" placeholder="Rechercher" class="search-bar">
+    <input 
+      type="text" 
+      placeholder="Rechercher un client..." 
+      class="search-bar"
+      [(ngModel)]="recherche"
+      (input)="onRechercheChange()"
+    >
+      @if (recherche) {
+        <button class="btn-clear-search" (click)="reinitialiserRecherche()" title="Effacer la recherche">
+          ×
+        </button>
+      }
   </div>
 
   <table class="clients-table">
@@ -11,15 +22,19 @@
         <th>Nom</th>
         <th>Email</th>
         <th>Nombre de comptes</th>
+        <th>Action</th>
       </tr>
     </thead>
 
     <tbody>
-      @for (client of clients; track client) {
+      @for (client of clientsFiltres; track client) {
       <tr>
         <td>{{ client.nom }} {{ client.prenom }}</td>
         <td>{{ client.email }}</td>
         <td>{{ client.nombreComptes || 0 }}</td>
+        <td>
+          <button class="btn edit" routerLink="/admin/comptes/ajouter/{{ client.id }}">Ajouter un compte</button>
+        </td>
       </tr>
     }
     </tbody>

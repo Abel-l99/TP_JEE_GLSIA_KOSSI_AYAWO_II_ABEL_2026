@@ -67,4 +67,11 @@ export class DashboardService {
     return this.http.get<any[]>(`${BASE_URL}/transaction/client/${clientId}`, { headers });
   }
 
+  getAllTransactions(): Observable<any[]> {
+    const headers = new HttpHeaders({
+      "Authorization": "Bearer " + localStorage.getItem("token")
+    });
+    return this.http.get<any[]>(`${BASE_URL}/transaction`, { headers });
+  }
+
 }

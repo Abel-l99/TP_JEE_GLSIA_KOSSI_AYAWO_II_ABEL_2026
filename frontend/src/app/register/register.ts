@@ -1,5 +1,5 @@
 // src/app/pages/register.component.ts
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouteReuseStrategy, RouterLink } from '@angular/router';
@@ -28,6 +28,7 @@ export class Register {
   
   private formBuilder = inject(FormBuilder);
   private loginService = inject(LoginService);
+  private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
 
   registerFormGroup: FormGroup = this.formBuilder.group({
@@ -43,11 +44,10 @@ export class Register {
   }
 
   invalidCredentials = false;
-  loading = false;
+  protected errorMessage: string | null = null;
 
   onSubmit() {
     if (this.registerFormGroup.valid) {
-      this.loading = true;
       this.invalidCredentials = false;
 
       const userData = {
@@ -58,14 +58,14 @@ export class Register {
 
       this.loginService.register(userData).subscribe({
         next: (response) => {
-          this.loading = false;
           console.log('Inscription réussie:', response);
           this.router.navigate(['/login']);
         },
         error: (error) => {
-          this.loading = false;
           this.invalidCredentials = true;
-          console.error('Erreur inscription:', error);
+          this.errorMessage = error.error?.message || 'Erreur inconnue';
+          console.log(error);
+          this.cdr.detectChanges();
         }
       });
     } else {

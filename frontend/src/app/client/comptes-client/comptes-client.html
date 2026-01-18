@@ -4,16 +4,13 @@
   <div class="section-header">
     <h3>Liste des Comptes</h3>
     
-    <div class="header-actions">
+    <!-- BARRE DE RECHERCHE SEULEMENT -->
+    <div class="search-container">
       <input 
         type="text" 
         [(ngModel)]="recherche"
         placeholder="Rechercher un compte..." 
         class="search-bar">
-      
-      <button class="btn add" routerLink="/client/comptes/ajouter">
-        Ajouter un compte
-      </button>
     </div>
   </div>
 
@@ -65,7 +62,7 @@
           </td>
           
           <td [class]="getSoldeClass(compte.solde || 0)">
-            {{ (compte.solde || 0) | currency:'EUR':'symbol':'1.2-2' }}
+            {{ (compte.solde || 0) }} FCFA
           </td>
           
           <td class="actions-cell">
@@ -86,14 +83,6 @@
     <div *ngIf="comptesFiltres.length === 0 && comptes.length > 0" class="no-results">
       <p>Aucun compte ne correspond à votre recherche "{{ recherche }}"</p>
     </div>
-
-    <div *ngIf="comptes.length === 0" class="no-accounts">
-      <div class="no-accounts-icon">🏦</div>
-      <p>Vous n'avez aucun compte bancaire</p>
-      <button routerLink="/comptes/ajouter" class="btn-add-first">
-        Créer votre premier compte
-      </button>
-    </div>
   </div>
 
 </section>
@@ -106,13 +95,13 @@
     <h4>Dépôt sur le compte {{compteSelectionne?.numeroCompte}}</h4>
     
     <div class="form-group">
-      <label>Montant (€)</label>
+      <label>Montant (FCFA)</label>
       <input 
         type="number" 
         [(ngModel)]="montantDepot" 
         placeholder="Entrez le montant"
         min="1"
-        step="0.01">
+        step="100">
     </div>
     
     <div class="dialog-actions">
@@ -129,7 +118,7 @@
     
     <div class="confirmation-details">
       <p><strong>Compte :</strong> {{compteSelectionne?.numeroCompte}}</p>
-      <p><strong>Montant :</strong> {{montantDepot | currency:'EUR':'symbol':'1.2-2'}}</p>
+      <p><strong>Montant :</strong> {{montantDepot}} FCFA</p>
       <p><strong>Type :</strong> {{compteSelectionne?.typeCompte}}</p>
     </div>
     
@@ -146,15 +135,15 @@
     <h4>Retrait sur le compte {{compteSelectionne?.numeroCompte}}</h4>
     
     <div class="form-group">
-      <label>Montant (€)</label>
+      <label>Montant (FCFA)</label>
       <input 
         type="number" 
         [(ngModel)]="montantRetrait" 
         placeholder="Entrez le montant"
         min="1"
-        step="0.01"
+        step="100"
         max="{{compteSelectionne?.solde}}">
-      <small *ngIf="compteSelectionne?.solde">Solde disponible: {{compteSelectionne?.solde | currency:'EUR':'symbol':'1.2-2'}}</small>
+      <small *ngIf="compteSelectionne?.solde">Solde disponible: {{compteSelectionne?.solde}} FCFA</small>
     </div>
     
     <div class="dialog-actions">
@@ -171,8 +160,8 @@
     
     <div class="confirmation-details">
       <p><strong>Compte :</strong> {{compteSelectionne?.numeroCompte}}</p>
-      <p><strong>Montant :</strong> {{montantRetrait | currency:'EUR':'symbol':'1.2-2'}}</p>
-      <p><strong>Solde après opération :</strong> {{(compteSelectionne?.solde - montantRetrait) | currency:'EUR':'symbol':'1.2-2'}}</p>
+      <p><strong>Montant :</strong> {{montantRetrait}} FCFA</p>
+      <p><strong>Solde après opération :</strong> {{(compteSelectionne?.solde - montantRetrait)}} FCFA</p>
     </div>
     
     <div class="dialog-actions">
@@ -188,13 +177,13 @@
     <h4>Virement depuis {{compteSelectionne?.numeroCompte}}</h4>
     
     <div class="form-group">
-      <label>Montant (€)</label>
+      <label>Montant (FCFA)</label>
       <input 
         type="number" 
         [(ngModel)]="montantVirement" 
         placeholder="Entrez le montant"
         min="1"
-        step="0.01"
+        step="100"
         max="{{compteSelectionne?.solde}}">
     </div>
     
@@ -206,7 +195,7 @@
         placeholder="Numéro de compte destinataire">
     </div>
     
-    <small *ngIf="compteSelectionne?.solde">Solde disponible: {{compteSelectionne?.solde | currency:'EUR':'symbol':'1.2-2'}}</small>
+    <small *ngIf="compteSelectionne?.solde">Solde disponible: {{compteSelectionne?.solde}} FCFA</small>
     
     <div class="dialog-actions">
       <button (click)="annulerVirement()" class="btn-cancel">Annuler</button>
@@ -223,8 +212,8 @@
     <div class="confirmation-details">
       <p><strong>Compte source :</strong> {{compteSelectionne?.numeroCompte}}</p>
       <p><strong>Compte destinataire :</strong> {{compteDestination}}</p>
-      <p><strong>Montant :</strong> {{montantVirement | currency:'EUR':'symbol':'1.2-2'}}</p>
-      <p><strong>Solde après opération :</strong> {{(compteSelectionne?.solde - montantVirement) | currency:'EUR':'symbol':'1.2-2'}}</p>
+      <p><strong>Montant :</strong> {{montantVirement}} FCFA</p>
+      <p><strong>Solde après opération :</strong> {{(compteSelectionne?.solde - montantVirement)}} FCFA</p>
     </div>
     
     <div class="dialog-actions">

@@ -131,6 +131,8 @@
   border-radius: 4px;
   display: inline-block;
   min-width: 40px;
+  margin-top: 15px;
+  width: fit-content;
 }
 
 /* ===== ALTERNATING ROWS ===== */
@@ -150,4 +152,50 @@
   padding: 40px;
   color: #95a5a6;
   font-style: italic;
+}
+
+.btn.edit {
+  // Style de base
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  // Effets au survol
+  &:hover {
+    background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.25);
+  }
+  
+  // Effet au clic
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(76, 175, 80, 0.3);
+  }
+  
+  // Style pour le focus (accessibilité)
+  &:focus {
+    outline: 2px solid rgba(76, 175, 80, 0.5);
+    outline-offset: 2px;
+  }
+  
+  // Désactivé
+  &:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    
+    &:hover {
+      background: #cccccc;
+      transform: none;
+      box-shadow: none;
+    }
+  }
 }

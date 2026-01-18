@@ -37,7 +37,7 @@ public interface TransactionRepository extends JpaRepository<TransactionEntity, 
             "ORDER BY t.date DESC")
     List<TransactionEntity> findByClientId(@Param("clientId") Long clientId);
 
-    // ✅ NOUVELLE MÉTHODE : Trouver les transactions d'un client sur une période
+    // NOUVELLE MÉTHODE : Trouver les transactions d'un client sur une période
     @Query("SELECT t FROM TransactionEntity t WHERE (t.compteSource.proprietaire.id = :clientId OR t.compteDestination.proprietaire.id = :clientId) AND t.date BETWEEN :dateDebut AND :dateFin ORDER BY t.date DESC")
     List<TransactionEntity> findByClientIdAndDateBetween(
             @Param("clientId") Long clientId,
