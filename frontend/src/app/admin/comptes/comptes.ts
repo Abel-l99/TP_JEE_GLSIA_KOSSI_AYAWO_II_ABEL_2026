@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { DashboardService } from '../../services/dashboard-service';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TransactionService } from '../../services/transaction-service';
 
 @Component({
   selector: 'app-comptes',
@@ -12,12 +13,24 @@ import { FormsModule } from '@angular/forms';
 export class Comptes {
 
   dashboardService = inject(DashboardService);
+  transactionService = inject(TransactionService);
   cdr = inject(ChangeDetectorRef);
 
   comptes: any[] = [];
   comptesFiltres: any[] = [];
   recherche: string = '';
   loading: boolean = false;
+
+  // Dépôt
+  compteSelectionne: any = null;
+  montantDepot: number = 0;
+  showSaisieDepot = false;
+  showConfirmationDepot = false;
+  
+  // Retrait
+  montantRetrait: number = 0;
+  showSaisieRetrait = false;
+  showConfirmationRetrait = false;
 
   ngOnInit(): void {
     this.loadComptes();
@@ -80,4 +93,88 @@ export class Comptes {
   getTypeBadgeClass(type: string): string {
     return type === 'COURANT' ? 'badge-courant' : 'badge-epargne';
   }
+
+  // === DÉPÔT ===
+  preparerDepot(compte: any) {
+    this.compteSelectionne = compte;
+    this.montantDepot = 0;
+    this.showSaisieDepot = true;
+  }
+
+  confirmerMontantDepot() {
+    if (this.montantDepot <= 0) {
+      alert("Montant invalide");
+      return;
+    }
+    this.showSaisieDepot = false;
+    this.showConfirmationDepot = true;
+  }
+
+  validerDepot() {
+    const depotData = {
+      type: "DEPOT",
+      montant: this.montantDepot,
+      numeroCompteSource: this.compteSelectionne.numeroCompte
+    };
+    
+    this.transactionService.effectuerDepot(depotData).subscribe({
+      next: () => {
+        this.showConfirmationDepot = false;
+        this.compteSelectionne = null;
+        this.loadComptes();
+      },
+      error: (error) => {
+        console.error('Erreur dépôt', error);
+        this.showConfirmationDepot = false;
+      }
+    });
+  }
+
+  annulerDepot() {
+    this.showSaisieDepot = false;
+    this.showConfirmationDepot = false;
+    this.compteSelectionne = null;
+  }
+
+  // === RETRAIT ===
+  preparerRetrait(compte: any) {
+    this.compteSelectionne = compte;
+    this.montantRetrait = 0;
+    this.showSaisieRetrait = true;
+  }
+
+  confirmerMontantRetrait() {
+    if (this.montantRetrait <= 0) {
+      alert("Montant invalide");
+      return;
+    }
+    this.showSaisieRetrait = false;
+    this.showConfirmationRetrait = true;
+  }
+
+  validerRetrait() {
+    const retraitData = {
+      type: "RETRAIT",
+      montant: this.montantRetrait,
+      numeroCompteSource: this.compteSelectionne.numeroCompte
+    };
+    
+    this.transactionService.effectuerRetrait(retraitData).subscribe({
+      next: () => {
+        this.showConfirmationRetrait = false;
+        this.loadComptes();
+      },
+      error: (error) => {
+        console.error('Erreur retrait', error);
+        this.showConfirmationRetrait = false;
+      }
+    });
+  }
+
+  annulerRetrait() {
+    this.showSaisieRetrait = false;
+    this.showConfirmationRetrait = false;
+    this.compteSelectionne = null;
+  }
+
 }

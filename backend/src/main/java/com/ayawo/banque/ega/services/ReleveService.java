@@ -15,6 +15,7 @@ import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.properties.HorizontalAlignment;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import lombok.RequiredArgsConstructor;
@@ -95,18 +96,42 @@ public class ReleveService {
             for (TransactionEntity t : toutesTransactions) {
                 boolean concerneCompte = false;
 
-                // Vérifier si la transaction concerne ce compte (source)
-                if (t.getCompteSource() != null &&
+                // DEPOT
+                if (t.getType() == TypeTransaction.DEPOT &&
+                        t.getCompteSource() != null &&
                         compte.getNumeroCompte().equals(t.getCompteSource().getNumeroCompte())) {
+
+                    concerneCompte = true;
+                    totalDepots = totalDepots.add(t.getMontant());
+                }
+
+                // RETRAIT
+                else if (t.getType() == TypeTransaction.RETRAIT &&
+                        t.getCompteSource() != null &&
+                        compte.getNumeroCompte().equals(t.getCompteSource().getNumeroCompte())) {
+
                     concerneCompte = true;
                     totalRetraits = totalRetraits.add(t.getMontant());
                 }
 
-                // Vérifier si la transaction concerne ce compte (destination)
-                if (t.getCompteDestination() != null &&
-                        compte.getNumeroCompte().equals(t.getCompteDestination().getNumeroCompte())) {
-                    concerneCompte = true;
-                    totalDepots = totalDepots.add(t.getMontant());
+                // VIREMENT
+                else if (t.getType() == TypeTransaction.VIREMENT) {
+
+                    // virement émis
+                    if (t.getCompteSource() != null &&
+                            compte.getNumeroCompte().equals(t.getCompteSource().getNumeroCompte())) {
+
+                        concerneCompte = true;
+                        totalRetraits = totalRetraits.add(t.getMontant());
+                    }
+
+                    // virement reçu
+                    if (t.getCompteDestination() != null &&
+                            compte.getNumeroCompte().equals(t.getCompteDestination().getNumeroCompte())) {
+
+                        concerneCompte = true;
+                        totalDepots = totalDepots.add(t.getMontant());
+                    }
                 }
 
                 if (concerneCompte) {
@@ -230,86 +255,137 @@ public class ReleveService {
 
     private void ajouterEnteteCompte(Document document, CompteEntity compte,
                                      LocalDateTime dateDebut, LocalDateTime dateFin) {
-        document.add(new Paragraph("RELEVÉ BANCAIRE")
-                .setFontSize(20)
+        document.add(new Paragraph("BANQUE EGA")
+                .setFontSize(24)
                 .setBold()
                 .setTextAlignment(TextAlignment.CENTER)
-                .setMarginBottom(10));
+                .setMarginBottom(5)
+                .setFontColor(ColorConstants.BLUE));
 
-        document.add(new Paragraph("BANQUE EGA")
-                .setFontSize(14)
+        document.add(new Paragraph("RELEVÉ BANCAIRE")
+                .setFontSize(18)
+                .setBold()
                 .setTextAlignment(TextAlignment.CENTER)
-                .setMarginBottom(20));
+                .setMarginBottom(15));
 
-        document.add(new Paragraph(
-                String.format("Période du %s au %s",
-                        dateDebut.format(DATE_SIMPLE),
-                        dateFin.format(DATE_SIMPLE)))
-                .setFontSize(12)
-                .setTextAlignment(TextAlignment.CENTER)
-                .setMarginBottom(20));
+        Table infoTable = new Table(UnitValue.createPercentArray(new float[]{50, 50}));
+        infoTable.setWidth(UnitValue.createPercentValue(90));
+        infoTable.setHorizontalAlignment(HorizontalAlignment.CENTER);
+        infoTable.setMarginBottom(15);
+
+        infoTable.addCell(new Cell().add(new Paragraph("Numéro de compte :").setBold())
+                .setPadding(5));
+        infoTable.addCell(new Cell().add(new Paragraph(compte.getNumeroCompte()))
+                .setPadding(5));
+
+        infoTable.addCell(new Cell().add(new Paragraph("Titulaire :").setBold())
+                .setPadding(5));
+        infoTable.addCell(new Cell().add(new Paragraph(compte.getProprietaire().getNomComplet()))
+                .setPadding(5));
+
+        infoTable.addCell(new Cell().add(new Paragraph("Période :").setBold())
+                .setPadding(5));
+        infoTable.addCell(new Cell().add(new Paragraph(
+                        String.format("Du %s au %s",
+                                dateDebut.format(DATE_SIMPLE),
+                                dateFin.format(DATE_SIMPLE))))
+                .setPadding(5));
+
+        document.add(infoTable);
+        document.add(new Paragraph(" ").setMarginBottom(20));
     }
 
     private void ajouterEnteteGlobal(Document document, ClientEntity client,
                                      LocalDateTime dateDebut, LocalDateTime dateFin) {
-        document.add(new Paragraph("RELEVÉ BANCAIRE GLOBAL")
-                .setFontSize(20)
+        document.add(new Paragraph("BANQUE EGA")
+                .setFontSize(24)
                 .setBold()
                 .setTextAlignment(TextAlignment.CENTER)
-                .setMarginBottom(10));
+                .setMarginBottom(5)
+                .setFontColor(ColorConstants.BLUE));
 
-        document.add(new Paragraph("BANQUE EGA")
-                .setFontSize(14)
+        document.add(new Paragraph("RELEVÉ BANCAIRE GLOBAL")
+                .setFontSize(18)
+                .setBold()
                 .setTextAlignment(TextAlignment.CENTER)
-                .setMarginBottom(10));
+                .setMarginBottom(15));
 
-        document.add(new Paragraph("Client : " + client.getNomComplet())
-                .setFontSize(12)
-                .setTextAlignment(TextAlignment.CENTER)
-                .setMarginBottom(5));
+        Table infoTable = new Table(UnitValue.createPercentArray(new float[]{50, 50}));
+        infoTable.setWidth(UnitValue.createPercentValue(90));
+        infoTable.setHorizontalAlignment(HorizontalAlignment.CENTER);
+        infoTable.setMarginBottom(15);
 
-        document.add(new Paragraph("Email : " + client.getEmail())
-                .setFontSize(10)
-                .setTextAlignment(TextAlignment.CENTER)
-                .setMarginBottom(10));
+        infoTable.addCell(new Cell().add(new Paragraph("Client :").setBold())
+                .setPadding(5));
+        infoTable.addCell(new Cell().add(new Paragraph(client.getNomComplet()))
+                .setPadding(5));
 
-        document.add(new Paragraph(
-                String.format("Période du %s au %s",
-                        dateDebut.format(DATE_SIMPLE),
-                        dateFin.format(DATE_SIMPLE)))
-                .setFontSize(12)
-                .setTextAlignment(TextAlignment.CENTER)
-                .setMarginBottom(20));
+        infoTable.addCell(new Cell().add(new Paragraph("Email :").setBold())
+                .setPadding(5));
+        infoTable.addCell(new Cell().add(new Paragraph(client.getEmail()))
+                .setPadding(5));
+
+        infoTable.addCell(new Cell().add(new Paragraph("Période :").setBold())
+                .setPadding(5));
+        infoTable.addCell(new Cell().add(new Paragraph(
+                        String.format("Du %s au %s",
+                                dateDebut.format(DATE_SIMPLE),
+                                dateFin.format(DATE_SIMPLE))))
+                .setPadding(5));
+
+        document.add(infoTable);
+        document.add(new Paragraph(" ").setMarginBottom(20));
     }
 
     // ========== INFOS COMPTE ==========
 
     private void ajouterInfosCompte(Document document, CompteEntity compte,
                                     BigDecimal soldeInitial, BigDecimal soldeFinal) {
-
         document.add(new Paragraph("INFORMATIONS DU COMPTE")
-                .setFontSize(14)
+                .setFontSize(16)
                 .setBold()
-                .setMarginTop(10)
-                .setMarginBottom(10));
+                .setTextAlignment(TextAlignment.CENTER)
+                .setMarginTop(15)
+                .setMarginBottom(15)
+                .setFontColor(ColorConstants.BLUE));
 
-        Table table = new Table(2);
-        table.setWidth(UnitValue.createPercentValue(100));
+        Table table = new Table(UnitValue.createPercentArray(new float[]{40, 60}));
+        table.setWidth(UnitValue.createPercentValue(90));
+        table.setMarginBottom(20);
+        table.setHorizontalAlignment(HorizontalAlignment.CENTER);
 
-        table.addCell(new Cell().add(new Paragraph("Titulaire :").setBold()));
-        table.addCell(new Cell().add(new Paragraph(compte.getProprietaire().getNomComplet())));
+        table.addCell(new Cell().add(new Paragraph("Titulaire :").setBold())
+                .setPadding(8)
+                .setBackgroundColor(ColorConstants.LIGHT_GRAY));
+        table.addCell(new Cell().add(new Paragraph(compte.getProprietaire().getNomComplet()))
+                .setPadding(8));
 
-        table.addCell(new Cell().add(new Paragraph("Numéro de compte :").setBold()));
-        table.addCell(new Cell().add(new Paragraph(compte.getNumeroCompte())));
+        table.addCell(new Cell().add(new Paragraph("Numéro de compte :").setBold())
+                .setPadding(8)
+                .setBackgroundColor(ColorConstants.LIGHT_GRAY));
+        table.addCell(new Cell().add(new Paragraph(compte.getNumeroCompte()))
+                .setPadding(8));
 
-        table.addCell(new Cell().add(new Paragraph("Type de compte :").setBold()));
-        table.addCell(new Cell().add(new Paragraph(compte.getTypeCompte().toString())));
+        table.addCell(new Cell().add(new Paragraph("Type de compte :").setBold())
+                .setPadding(8)
+                .setBackgroundColor(ColorConstants.LIGHT_GRAY));
+        table.addCell(new Cell().add(new Paragraph(compte.getTypeCompte().toString()))
+                .setPadding(8));
 
-        table.addCell(new Cell().add(new Paragraph("Solde initial :").setBold()));
-        table.addCell(new Cell().add(new Paragraph(String.format("%.2f FCFA", soldeInitial))));
+        table.addCell(new Cell().add(new Paragraph("Solde initial :").setBold())
+                .setPadding(8)
+                .setBackgroundColor(ColorConstants.LIGHT_GRAY));
+        table.addCell(new Cell().add(new Paragraph(String.format("%,.2f FCFA", soldeInitial)))
+                .setPadding(8)
+                .setTextAlignment(TextAlignment.RIGHT));
 
-        table.addCell(new Cell().add(new Paragraph("Solde final :").setBold()));
-        table.addCell(new Cell().add(new Paragraph(String.format("%.2f FCFA", soldeFinal)).setBold()));
+        table.addCell(new Cell().add(new Paragraph("Solde final :").setBold())
+                .setPadding(8)
+                .setBackgroundColor(ColorConstants.LIGHT_GRAY));
+        table.addCell(new Cell().add(new Paragraph(String.format("%,.2f FCFA", soldeFinal)).setBold())
+                .setPadding(8)
+                .setTextAlignment(TextAlignment.RIGHT)
+                .setFontColor(ColorConstants.BLUE));
 
         document.add(table);
         document.add(new Paragraph("\n"));
@@ -320,32 +396,55 @@ public class ReleveService {
     private void ajouterResumeGlobal(Document document, int nombreComptes,
                                      BigDecimal totalDepots, BigDecimal totalRetraits,
                                      BigDecimal soldeTotal) {
-
         document.add(new Paragraph("RÉSUMÉ GLOBAL")
-                .setFontSize(14)
+                .setFontSize(16)
                 .setBold()
-                .setMarginTop(10)
-                .setMarginBottom(10));
+                .setTextAlignment(TextAlignment.CENTER)
+                .setMarginTop(15)
+                .setMarginBottom(15)
+                .setFontColor(ColorConstants.BLUE));
 
-        Table table = new Table(2);
-        table.setWidth(UnitValue.createPercentValue(100));
+        Table table = new Table(UnitValue.createPercentArray(new float[]{50, 50}));
+        table.setWidth(UnitValue.createPercentValue(90));
+        table.setMarginBottom(20);
+        table.setHorizontalAlignment(HorizontalAlignment.CENTER);
 
-        table.addCell(new Cell().add(new Paragraph("Nombre de comptes :").setBold()));
-        table.addCell(new Cell().add(new Paragraph(String.valueOf(nombreComptes))));
-
-        table.addCell(new Cell().add(new Paragraph("Total des dépôts :").setBold()));
-        table.addCell(new Cell().add(new Paragraph(String.format("%.2f FCFA", totalDepots))
-                .setFontColor(ColorConstants.GREEN)));
-
-        table.addCell(new Cell().add(new Paragraph("Total des retraits :").setBold()));
-        table.addCell(new Cell().add(new Paragraph(String.format("%.2f FCFA", totalRetraits))
-                .setFontColor(ColorConstants.RED)));
-
-        table.addCell(new Cell().add(new Paragraph("Solde total :").setBold()));
-        table.addCell(new Cell().add(new Paragraph(String.format("%.2f FCFA", soldeTotal))
-                        .setBold()
-                        .setFontSize(12))
+        table.addCell(new Cell().add(new Paragraph("Nombre de comptes :").setBold())
+                .setPadding(10)
                 .setBackgroundColor(ColorConstants.LIGHT_GRAY));
+        table.addCell(new Cell().add(new Paragraph(String.valueOf(nombreComptes)))
+                .setPadding(10)
+                .setTextAlignment(TextAlignment.RIGHT));
+
+        table.addCell(new Cell().add(new Paragraph("Total des dépôts :").setBold())
+                .setPadding(10)
+                .setBackgroundColor(ColorConstants.LIGHT_GRAY));
+        table.addCell(new Cell().add(new Paragraph(String.format("%,.2f FCFA", totalDepots))
+                        .setBold())
+                .setPadding(10)
+                .setTextAlignment(TextAlignment.RIGHT)
+                .setFontColor(ColorConstants.GREEN));
+
+        table.addCell(new Cell().add(new Paragraph("Total des retraits :").setBold())
+                .setPadding(10)
+                .setBackgroundColor(ColorConstants.LIGHT_GRAY));
+        table.addCell(new Cell().add(new Paragraph(String.format("%,.2f FCFA", totalRetraits))
+                        .setBold())
+                .setPadding(10)
+                .setTextAlignment(TextAlignment.RIGHT)
+                .setFontColor(ColorConstants.RED));
+
+        table.addCell(new Cell().add(new Paragraph("SOLDE TOTAL :").setBold())
+                .setPadding(10)
+                .setBackgroundColor(ColorConstants.DARK_GRAY)
+                .setFontColor(ColorConstants.WHITE));
+        table.addCell(new Cell().add(new Paragraph(String.format("%,.2f FCFA", soldeTotal))
+                        .setBold()
+                        .setFontSize(14))
+                .setPadding(10)
+                .setTextAlignment(TextAlignment.RIGHT)
+                .setBackgroundColor(ColorConstants.LIGHT_GRAY)
+                .setFontColor(ColorConstants.BLUE));
 
         document.add(table);
         document.add(new Paragraph("\n"));
@@ -355,23 +454,26 @@ public class ReleveService {
 
     private void ajouterDetailsCompte(Document document, CompteEntity compte,
                                       List<TransactionEntity> transactions) {
-
         document.add(new Paragraph("Compte " + compte.getTypeCompte() + " - N° " + compte.getNumeroCompte())
+                .setFontSize(14)
+                .setBold()
+                .setTextAlignment(TextAlignment.CENTER)
+                .setMarginTop(20)
+                .setMarginBottom(5)
+                .setFontColor(ColorConstants.BLUE));
+
+        document.add(new Paragraph("Solde actuel : " + String.format("%,.2f FCFA", compte.getSolde()))
                 .setFontSize(12)
                 .setBold()
-                .setMarginTop(15)
-                .setMarginBottom(5));
-
-        document.add(new Paragraph("Solde actuel : " + String.format("%.2f FCFA", compte.getSolde()))
-                .setFontSize(10)
-                .setBold()
-                .setMarginBottom(10));
+                .setTextAlignment(TextAlignment.CENTER)
+                .setMarginBottom(15));
 
         if (transactions.isEmpty()) {
             document.add(new Paragraph("Aucune transaction sur cette période")
                     .setItalic()
                     .setFontSize(10)
-                    .setMarginBottom(15));
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setMarginBottom(20));
             return;
         }
 
@@ -382,7 +484,6 @@ public class ReleveService {
 
     private void ajouterTableauTransactions(Document document, List<TransactionEntity> transactions,
                                             String numeroCompte) {
-
         if (transactions.isEmpty()) {
             document.add(new Paragraph("Aucune opération sur cette période.")
                     .setItalic()
@@ -390,54 +491,106 @@ public class ReleveService {
             return;
         }
 
-        float[] columnWidths = {15f, 20f, 35f, 15f, 15f};
+        float[] columnWidths = {25f, 20f, 27.5f, 27.5f};
         Table table = new Table(columnWidths);
         table.setWidth(UnitValue.createPercentValue(100));
+        table.setMarginBottom(15);
 
         // En-têtes
-        table.addHeaderCell(new Cell().add(new Paragraph("Date").setBold())
-                .setBackgroundColor(ColorConstants.LIGHT_GRAY)
-                .setTextAlignment(TextAlignment.CENTER));
-        table.addHeaderCell(new Cell().add(new Paragraph("Type").setBold())
-                .setBackgroundColor(ColorConstants.LIGHT_GRAY)
-                .setTextAlignment(TextAlignment.CENTER));
-        table.addHeaderCell(new Cell().add(new Paragraph("Description").setBold())
-                .setBackgroundColor(ColorConstants.LIGHT_GRAY)
-                .setTextAlignment(TextAlignment.CENTER));
-        table.addHeaderCell(new Cell().add(new Paragraph("Débit").setBold())
-                .setBackgroundColor(ColorConstants.LIGHT_GRAY)
-                .setTextAlignment(TextAlignment.CENTER));
-        table.addHeaderCell(new Cell().add(new Paragraph("Crédit").setBold())
-                .setBackgroundColor(ColorConstants.LIGHT_GRAY)
-                .setTextAlignment(TextAlignment.CENTER));
+        table.addHeaderCell(new Cell().add(new Paragraph("DATE").setBold())
+                .setBackgroundColor(ColorConstants.DARK_GRAY)
+                .setFontColor(ColorConstants.WHITE)
+                .setTextAlignment(TextAlignment.CENTER)
+                .setPadding(8));
+
+        table.addHeaderCell(new Cell().add(new Paragraph("TYPE").setBold())
+                .setBackgroundColor(ColorConstants.DARK_GRAY)
+                .setFontColor(ColorConstants.WHITE)
+                .setTextAlignment(TextAlignment.CENTER)
+                .setPadding(8));
+
+        table.addHeaderCell(new Cell().add(new Paragraph("DÉBIT").setBold())
+                .setBackgroundColor(ColorConstants.DARK_GRAY)
+                .setFontColor(ColorConstants.WHITE)
+                .setTextAlignment(TextAlignment.CENTER)
+                .setPadding(8));
+
+        table.addHeaderCell(new Cell().add(new Paragraph("CRÉDIT").setBold())
+                .setBackgroundColor(ColorConstants.DARK_GRAY)
+                .setFontColor(ColorConstants.WHITE)
+                .setTextAlignment(TextAlignment.CENTER)
+                .setPadding(8));
 
         // Lignes
         for (TransactionEntity transaction : transactions) {
-            table.addCell(new Cell().add(new Paragraph(transaction.getDate().format(DATE_FORMATTER)))
-                    .setFontSize(10));
+            // Colonne DATE
+            table.addCell(new Cell()
+                    .add(new Paragraph(transaction.getDate().format(DATE_FORMATTER)))
+                    .setFontSize(10)
+                    .setPadding(6)
+                    .setTextAlignment(TextAlignment.CENTER));
 
-            table.addCell(new Cell().add(new Paragraph(transaction.getType().toString()))
-                    .setFontSize(10));
+            // Colonne TYPE
+            table.addCell(new Cell()
+                    .add(new Paragraph(transaction.getType().toString()))
+                    .setFontSize(10)
+                    .setPadding(6)
+                    .setTextAlignment(TextAlignment.CENTER));
 
-            boolean estDebit = transaction.getCompteSource() != null &&
-                    transaction.getCompteSource().getNumeroCompte().equals(numeroCompte);
+            boolean estDebit = false;
+
+            if (transaction.getType() == TypeTransaction.DEPOT) {
+                // DÉPÔT = CRÉDIT (argent entre)
+                estDebit = false;
+            }
+            else if (transaction.getType() == TypeTransaction.RETRAIT) {
+                // RETRAIT = DÉBIT (argent sort)
+                estDebit = true;
+            }
+            else if (transaction.getType() == TypeTransaction.VIREMENT) {
+                // Virement émis = DÉBIT, Virement reçu = CRÉDIT
+                if (transaction.getCompteSource() != null &&
+                        transaction.getCompteSource().getNumeroCompte().equals(numeroCompte)) {
+                    estDebit = true; // Virement émis
+                } else {
+                    estDebit = false; // Virement reçu
+                }
+            }
 
             if (estDebit) {
-                table.addCell(new Cell().add(new Paragraph(String.format("%.2f", transaction.getMontant())))
+                // Débit (sortie d'argent)
+                table.addCell(new Cell()
+                        .add(new Paragraph(String.format("%,.2f FCFA", transaction.getMontant())))
                         .setFontSize(10)
+                        .setPadding(6)
                         .setTextAlignment(TextAlignment.RIGHT)
-                        .setFontColor(ColorConstants.RED));
-                table.addCell(new Cell().add(new Paragraph("-"))
+                        .setFontColor(ColorConstants.RED)
+                        .setBold());
+
+                // Crédit vide pour débit
+                table.addCell(new Cell()
+                        .add(new Paragraph("-"))
                         .setFontSize(10)
-                        .setTextAlignment(TextAlignment.RIGHT));
+                        .setPadding(6)
+                        .setTextAlignment(TextAlignment.CENTER)
+                        .setFontColor(ColorConstants.GRAY));
             } else {
-                table.addCell(new Cell().add(new Paragraph("-"))
+                // Débit vide pour crédit
+                table.addCell(new Cell()
+                        .add(new Paragraph("-"))
                         .setFontSize(10)
-                        .setTextAlignment(TextAlignment.RIGHT));
-                table.addCell(new Cell().add(new Paragraph(String.format("%.2f", transaction.getMontant())))
+                        .setPadding(6)
+                        .setTextAlignment(TextAlignment.CENTER)
+                        .setFontColor(ColorConstants.GRAY));
+
+                // Crédit (entrée d'argent)
+                table.addCell(new Cell()
+                        .add(new Paragraph(String.format("%,.2f FCFA", transaction.getMontant())))
                         .setFontSize(10)
+                        .setPadding(6)
                         .setTextAlignment(TextAlignment.RIGHT)
-                        .setFontColor(ColorConstants.GREEN));
+                        .setFontColor(ColorConstants.GREEN)
+                        .setBold());
             }
         }
 
@@ -449,15 +602,20 @@ public class ReleveService {
 
     private void ajouterPiedDePage(Document document) {
         document.add(new Paragraph("\n"));
+        document.add(new Paragraph("-".repeat(80))
+                .setFontSize(8)
+                .setTextAlignment(TextAlignment.CENTER)
+                .setMarginTop(20));
+
         document.add(new Paragraph("Banque EGA - Tous droits réservés")
                 .setFontSize(10)
                 .setItalic()
-                .setTextAlignment(TextAlignment.CENTER)
-                .setMarginTop(20));
+                .setTextAlignment(TextAlignment.CENTER));
 
         document.add(new Paragraph("Date d'édition : " + LocalDateTime.now().format(DATE_FORMATTER))
                 .setFontSize(10)
                 .setItalic()
-                .setTextAlignment(TextAlignment.CENTER));
+                .setTextAlignment(TextAlignment.CENTER)
+                .setMarginBottom(20));
     }
 }

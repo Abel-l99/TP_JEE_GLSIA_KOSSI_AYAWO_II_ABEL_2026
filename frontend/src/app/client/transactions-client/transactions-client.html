@@ -3,10 +3,8 @@
   <div class="section-header">
     <h3>Historique des transactions</h3>
     <div class="header-actions">
-      <button class="btn-preview" (click)="voirReleve()" 
-        [disabled]="genererLoading || mesComptes.length === 0">
-        <span *ngIf="!genererLoading">👁️ Voir le relevé</span>
-        <span *ngIf="genererLoading"><span class="spinner"></span> Génération...</span>
+      <button class="btn-preview" (click)="voirReleve()">
+        <span>👁️ Voir le relevé</span>
       </button>
     </div>
   </div>

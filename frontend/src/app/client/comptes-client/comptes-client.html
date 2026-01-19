@@ -66,12 +66,6 @@
           </td>
           
           <td class="actions-cell">
-            <button (click)="preparerDepot(compte)" class="btn-action btn-depot">
-              Dépôt
-            </button>
-            <button (click)="preparerRetrait(compte)" class="btn-action btn-retrait">
-              Retrait
-            </button>
             <button (click)="preparerVirement(compte)" class="btn-action btn-virement">
               Virement
             </button>
@@ -88,88 +82,6 @@
 </section>
 
 <!-- ===== MODALES ===== -->
-
-<!-- DÉPÔT : Saisie du montant -->
-<div *ngIf="showSaisieDepot" class="dialog-overlay">
-  <div class="dialog">
-    <h4>Dépôt sur le compte {{compteSelectionne?.numeroCompte}}</h4>
-    
-    <div class="form-group">
-      <label>Montant (FCFA)</label>
-      <input 
-        type="number" 
-        [(ngModel)]="montantDepot" 
-        placeholder="Entrez le montant"
-        min="1"
-        step="100">
-    </div>
-    
-    <div class="dialog-actions">
-      <button (click)="annulerDepot()" class="btn-cancel">Annuler</button>
-      <button (click)="confirmerMontantDepot()" class="btn-confirm">Continuer</button>
-    </div>
-  </div>
-</div>
-
-<!-- DÉPÔT : Confirmation -->
-<div *ngIf="showConfirmationDepot" class="dialog-overlay">
-  <div class="dialog">
-    <h4>Confirmer le dépôt</h4>
-    
-    <div class="confirmation-details">
-      <p><strong>Compte :</strong> {{compteSelectionne?.numeroCompte}}</p>
-      <p><strong>Montant :</strong> {{montantDepot}} FCFA</p>
-      <p><strong>Type :</strong> {{compteSelectionne?.typeCompte}}</p>
-    </div>
-    
-    <div class="dialog-actions">
-      <button (click)="annulerDepot()" class="btn-cancel">Annuler</button>
-      <button (click)="validerDepot()" class="btn-confirm">Confirmer le dépôt</button>
-    </div>
-  </div>
-</div>
-
-<!-- RETRAIT : Saisie du montant -->
-<div *ngIf="showSaisieRetrait" class="dialog-overlay">
-  <div class="dialog">
-    <h4>Retrait sur le compte {{compteSelectionne?.numeroCompte}}</h4>
-    
-    <div class="form-group">
-      <label>Montant (FCFA)</label>
-      <input 
-        type="number" 
-        [(ngModel)]="montantRetrait" 
-        placeholder="Entrez le montant"
-        min="1"
-        step="100"
-        max="{{compteSelectionne?.solde}}">
-      <small *ngIf="compteSelectionne?.solde">Solde disponible: {{compteSelectionne?.solde}} FCFA</small>
-    </div>
-    
-    <div class="dialog-actions">
-      <button (click)="annulerRetrait()" class="btn-cancel">Annuler</button>
-      <button (click)="confirmerMontantRetrait()" class="btn-confirm">Continuer</button>
-    </div>
-  </div>
-</div>
-
-<!-- RETRAIT : Confirmation -->
-<div *ngIf="showConfirmationRetrait" class="dialog-overlay">
-  <div class="dialog">
-    <h4>Confirmer le retrait</h4>
-    
-    <div class="confirmation-details">
-      <p><strong>Compte :</strong> {{compteSelectionne?.numeroCompte}}</p>
-      <p><strong>Montant :</strong> {{montantRetrait}} FCFA</p>
-      <p><strong>Solde après opération :</strong> {{(compteSelectionne?.solde - montantRetrait)}} FCFA</p>
-    </div>
-    
-    <div class="dialog-actions">
-      <button (click)="annulerRetrait()" class="btn-cancel">Annuler</button>
-      <button (click)="validerRetrait()" class="btn-confirm">Confirmer le retrait</button>
-    </div>
-  </div>
-</div>
 
 <!-- VIREMENT : Saisie -->
 <div *ngIf="showSaisieVirement" class="dialog-overlay">
